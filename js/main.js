@@ -1,12 +1,13 @@
 /* ============================================================
    OASIS J&R LAND CLEARING — main.js
-   Vanilla JS, no dependencies. Six independent features:
+   Vanilla JS, no dependencies. Seven independent features:
    1. Mobile nav toggle (aria-expanded)
    2. Staggered scroll-reveal via IntersectionObserver
    3. Hero on-load stagger (fade + slide up, fixed sequence)
    4. Gallery lightbox with focus trap + Escape + focus-return
    5. EN / ES language toggle (data-en / data-es swap)
    6. Hero background video (reduced-motion aware autoplay)
+   7. Project photo carousel (auto-advance, arrows, swipe, loop)
    ============================================================ */
 
 (function () {
@@ -29,6 +30,139 @@
       // (e.g. low-power mode) — fail silently and keep the poster.
       playAttempt.catch(function () {});
     }
+  }
+
+  /* ---------------------------------------------------------
+     7. Project photo carousel
+     Runs before the language toggle below clones two slides at
+     each end for a seamless loop; those clones need to exist
+     before the language toggle queries [data-en], otherwise
+     clone captions would never get swept into translatableEls.
+     --------------------------------------------------------- */
+  var carouselRoot = document.getElementById("gallery-carousel");
+  if (carouselRoot) {
+    var carouselTrack = document.getElementById("gallery-track");
+    var carouselViewport = carouselRoot.querySelector(".carousel__viewport");
+    var carouselPrev = carouselRoot.querySelector(".carousel__arrow--prev");
+    var carouselNext = carouselRoot.querySelector(".carousel__arrow--next");
+    var carouselRealSlides = Array.prototype.slice.call(carouselTrack.children);
+    var CAROUSEL_REAL_COUNT = carouselRealSlides.length;
+    var CAROUSEL_CLONE_COUNT = 2; // covers both the 2-up and 1-up step sizes
+
+    // Prepend clones of the last two slides, append clones of the first
+    // two, so stepping past either end lands on a visually-identical
+    // clone — then we snap (no transition) back to the real slide.
+    carouselRealSlides.slice(CAROUSEL_REAL_COUNT - CAROUSEL_CLONE_COUNT).forEach(function (node) {
+      var clone = node.cloneNode(true);
+      clone.setAttribute("data-carousel-clone", "true");
+      carouselTrack.insertBefore(clone, carouselTrack.firstChild);
+    });
+    carouselRealSlides.slice(0, CAROUSEL_CLONE_COUNT).forEach(function (node) {
+      var clone = node.cloneNode(true);
+      clone.setAttribute("data-carousel-clone", "true");
+      carouselTrack.appendChild(clone);
+    });
+
+    var carouselPosition = CAROUSEL_CLONE_COUNT; // index of real slide 0
+
+    function carouselVisibleCount() {
+      return window.matchMedia("(max-width: 640px)").matches ? 1 : 2;
+    }
+    function carouselStepPx() {
+      var firstSlide = carouselTrack.children[0];
+      var gap = parseFloat(getComputedStyle(carouselTrack).columnGap) || 0;
+      return firstSlide.getBoundingClientRect().width + gap;
+    }
+    function carouselRender(instant) {
+      var offset = -carouselPosition * carouselStepPx();
+      if (instant || prefersReducedMotion) {
+        carouselTrack.style.transition = "none";
+        carouselTrack.style.transform = "translateX(" + offset + "px)";
+        void carouselTrack.offsetHeight; // force reflow before re-enabling transition
+        carouselTrack.style.transition = "";
+      } else {
+        carouselTrack.style.transform = "translateX(" + offset + "px)";
+      }
+    }
+    function carouselGo(delta) {
+      carouselPosition += delta;
+      carouselRender(false);
+    }
+
+    carouselTrack.addEventListener("transitionend", function (e) {
+      if (e.target !== carouselTrack || e.propertyName !== "transform") return;
+      if (carouselPosition >= CAROUSEL_CLONE_COUNT + CAROUSEL_REAL_COUNT) {
+        carouselPosition -= CAROUSEL_REAL_COUNT;
+        carouselRender(true);
+      } else if (carouselPosition < CAROUSEL_CLONE_COUNT) {
+        carouselPosition += CAROUSEL_REAL_COUNT;
+        carouselRender(true);
+      }
+    });
+
+    var CAROUSEL_AUTO_MS = 4500;
+    var carouselTimer = null;
+    function carouselStop() {
+      if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+    }
+    function carouselStart() {
+      carouselStop();
+      if (prefersReducedMotion) return;
+      carouselTimer = setInterval(function () { carouselGo(carouselVisibleCount()); }, CAROUSEL_AUTO_MS);
+    }
+
+    if (carouselPrev) {
+      carouselPrev.addEventListener("click", function () {
+        carouselGo(-carouselVisibleCount());
+        carouselStart(); // reset the timer so it doesn't jump right after
+      });
+    }
+    if (carouselNext) {
+      carouselNext.addEventListener("click", function () {
+        carouselGo(carouselVisibleCount());
+        carouselStart();
+      });
+    }
+
+    carouselRoot.addEventListener("mouseenter", carouselStop);
+    carouselRoot.addEventListener("mouseleave", carouselStart);
+    carouselRoot.addEventListener("focusin", carouselStop);
+    carouselRoot.addEventListener("focusout", function () {
+      // Only resume once focus has actually left the whole carousel.
+      requestAnimationFrame(function () {
+        if (!carouselRoot.contains(document.activeElement)) carouselStart();
+      });
+    });
+
+    // Touch swipe — threshold-based (not drag-follow) to keep this simple
+    // and robust; a plain tap still passes through to the tile's click.
+    // Compares deltaX to deltaY so a mostly-vertical scroll gesture isn't
+    // mistaken for a swipe and doesn't hijack page scrolling.
+    var carouselTouchStartX = null;
+    var carouselTouchStartY = null;
+    if (carouselViewport) {
+      carouselViewport.addEventListener("touchstart", function (e) {
+        carouselTouchStartX = e.touches[0].clientX;
+        carouselTouchStartY = e.touches[0].clientY;
+        carouselStop();
+      }, { passive: true });
+      carouselViewport.addEventListener("touchend", function (e) {
+        if (carouselTouchStartX === null) return;
+        var deltaX = e.changedTouches[0].clientX - carouselTouchStartX;
+        var deltaY = e.changedTouches[0].clientY - carouselTouchStartY;
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          carouselGo(deltaX < 0 ? carouselVisibleCount() : -carouselVisibleCount());
+        }
+        carouselTouchStartX = null;
+        carouselTouchStartY = null;
+        carouselStart();
+      }, { passive: true });
+    }
+
+    window.addEventListener("resize", function () { carouselRender(true); });
+
+    carouselRender(true);
+    carouselStart();
   }
 
   /* ---------------------------------------------------------
@@ -173,7 +307,6 @@
   var lightboxImg = document.getElementById("lightbox-img");
   var lightboxCaption = document.getElementById("lightbox-caption");
   var lightboxClose = document.getElementById("lightbox-close");
-  var galleryTiles = document.querySelectorAll(".gallery-tile");
   var lastFocusedEl = null;
   var lastOpenedGalleryTile = null;
 
@@ -235,9 +368,14 @@
     }
   }
 
-  galleryTiles.forEach(function (tile) {
-    tile.addEventListener("click", function () { openLightbox(tile); });
-  });
+  // Delegated (not per-tile) so the carousel's cloned slides — added
+  // above, after this script started running — open the lightbox too.
+  if (carouselRoot) {
+    carouselRoot.addEventListener("click", function (e) {
+      var tile = e.target.closest(".gallery-tile");
+      if (tile) openLightbox(tile);
+    });
+  }
 
   if (lightboxClose) {
     lightboxClose.addEventListener("click", closeLightbox);

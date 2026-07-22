@@ -304,51 +304,75 @@
   </section>
 
   <!-- ============================================================
-       GALLERY — clean grid + lightbox
+       GALLERY — auto-advancing carousel (2-up desktop, 1-up mobile) + lightbox
        To swap in real photos: replace each .gallery-tile__img div
        with <img src="images/gallery-XX.jpg" alt="descriptive text"
        loading="lazy" class="gallery-tile__img"> and keep the
        data-caption-en / data-caption-es attributes on the parent
        button in sync with the real photo.
+       js/main.js clones the first/last two slides at startup to make
+       the loop seamless — don't hand-edit clones, they're generated.
        ============================================================ -->
   <section class="section section--sand" id="gallery" aria-labelledby="gallery-heading">
     <div class="container">
       <p class="eyebrow" data-en="The Work" data-es="El Trabajo">The Work</p>
       <h2 class="section-title" id="gallery-heading" data-en="Overgrown to Open Ground" data-es="De Maleza a Terreno Despejado">Overgrown to Open Ground</h2>
 
-      <div class="gallery-grid" id="gallery-grid">
-        <button class="gallery-tile reveal" type="button" data-caption-en="Cleared Lot — Overgrown to Open" data-caption-es="Lote Despejado — De Maleza a Terreno Abierto">
-          <div class="gallery-tile__img gallery-tile__img--1"></div>
-          <span class="gallery-tile__label" data-en="Cleared Lot" data-es="Lote Despejado">Cleared Lot</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Tree &amp; Stump Removal" data-caption-es="Remoci&oacute;n de &Aacute;rboles y Tocones">
-          <div class="gallery-tile__img gallery-tile__img--2"></div>
-          <span class="gallery-tile__label" data-en="Tree &amp; Stump Removal" data-es="Remoci&oacute;n de &Aacute;rboles y Tocones">Tree &amp; Stump Removal</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Leveled Ground" data-caption-es="Terreno Nivelado">
-          <div class="gallery-tile__img gallery-tile__img--3"></div>
-          <span class="gallery-tile__label" data-en="Leveled Ground" data-es="Terreno Nivelado">Leveled Ground</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Drainage Work" data-caption-es="Trabajo de Drenaje">
-          <div class="gallery-tile__img gallery-tile__img--4"></div>
-          <span class="gallery-tile__label" data-en="Drainage Work" data-es="Trabajo de Drenaje">Drainage Work</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Before / After — Land Clearing" data-caption-es="Antes / Despu&eacute;s — Limpieza de Terrenos">
-          <div class="gallery-tile__img gallery-tile__img--5"></div>
-          <span class="gallery-tile__label" data-en="Before / After" data-es="Antes / Despu&eacute;s">Before / After</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Equipment on Site" data-caption-es="Equipo en el Sitio">
-          <div class="gallery-tile__img gallery-tile__img--6"></div>
-          <span class="gallery-tile__label" data-en="Equipment on Site" data-es="Equipo en el Sitio">Equipment on Site</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Brush Clearing" data-caption-es="Limpieza de Maleza">
-          <div class="gallery-tile__img gallery-tile__img--7"></div>
-          <span class="gallery-tile__label" data-en="Brush Clearing" data-es="Limpieza de Maleza">Brush Clearing</span>
-        </button>
-        <button class="gallery-tile reveal" type="button" data-caption-en="Finished Graded Lot" data-caption-es="Lote Nivelado y Terminado">
-          <div class="gallery-tile__img gallery-tile__img--8"></div>
-          <span class="gallery-tile__label" data-en="Finished Graded Lot" data-es="Lote Nivelado y Terminado">Finished Graded Lot</span>
-        </button>
+      <div class="carousel reveal" id="gallery-carousel" role="region" aria-roledescription="carousel" aria-label="Project photos">
+        <div class="carousel__viewport">
+          <div class="carousel__track" id="gallery-track">
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Cleared Lot — Overgrown to Open" data-caption-es="Lote Despejado — De Maleza a Terreno Abierto">
+                <div class="gallery-tile__img gallery-tile__img--1"></div>
+                <span class="gallery-tile__label" data-en="Cleared Lot" data-es="Lote Despejado">Cleared Lot</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Tree &amp; Stump Removal" data-caption-es="Remoci&oacute;n de &Aacute;rboles y Tocones">
+                <div class="gallery-tile__img gallery-tile__img--2"></div>
+                <span class="gallery-tile__label" data-en="Tree &amp; Stump Removal" data-es="Remoci&oacute;n de &Aacute;rboles y Tocones">Tree &amp; Stump Removal</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Leveled Ground" data-caption-es="Terreno Nivelado">
+                <div class="gallery-tile__img gallery-tile__img--3"></div>
+                <span class="gallery-tile__label" data-en="Leveled Ground" data-es="Terreno Nivelado">Leveled Ground</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Drainage Work" data-caption-es="Trabajo de Drenaje">
+                <div class="gallery-tile__img gallery-tile__img--4"></div>
+                <span class="gallery-tile__label" data-en="Drainage Work" data-es="Trabajo de Drenaje">Drainage Work</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Before / After — Land Clearing" data-caption-es="Antes / Despu&eacute;s — Limpieza de Terrenos">
+                <div class="gallery-tile__img gallery-tile__img--5"></div>
+                <span class="gallery-tile__label" data-en="Before / After" data-es="Antes / Despu&eacute;s">Before / After</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Equipment on Site" data-caption-es="Equipo en el Sitio">
+                <div class="gallery-tile__img gallery-tile__img--6"></div>
+                <span class="gallery-tile__label" data-en="Equipment on Site" data-es="Equipo en el Sitio">Equipment on Site</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Brush Clearing" data-caption-es="Limpieza de Maleza">
+                <div class="gallery-tile__img gallery-tile__img--7"></div>
+                <span class="gallery-tile__label" data-en="Brush Clearing" data-es="Limpieza de Maleza">Brush Clearing</span>
+              </button>
+            </div>
+            <div class="carousel__slide">
+              <button class="gallery-tile" type="button" data-caption-en="Finished Graded Lot" data-caption-es="Lote Nivelado y Terminado">
+                <div class="gallery-tile__img gallery-tile__img--8"></div>
+                <span class="gallery-tile__label" data-en="Finished Graded Lot" data-es="Lote Nivelado y Terminado">Finished Graded Lot</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="carousel__arrow carousel__arrow--prev" type="button" aria-label="Previous photos">&#8249;</button>
+        <button class="carousel__arrow carousel__arrow--next" type="button" aria-label="Next photos">&#8250;</button>
       </div>
     </div>
   </section>

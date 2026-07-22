@@ -47,7 +47,16 @@
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Stop mobile Safari/Chrome from auto-boosting font sizes based on
+     their own text-density heuristics — without this, that heuristic
+     can silently re-trigger (and visibly jump) whenever JS swaps text
+     content, e.g. the EN/ES toggle. Font sizes should only ever come
+     from our own CSS. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
@@ -641,15 +650,51 @@ button:focus-visible,
   }
 }
 
-/* ---------- Gallery ---------- */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(12px, 2vw, 20px);
+/* ---------- Gallery carousel ---------- */
+.carousel {
+  position: relative;
+  --carousel-gap: 16px;
 }
+.carousel__viewport { overflow: hidden; }
+.carousel__track {
+  display: flex;
+  gap: var(--carousel-gap);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .carousel__track { transition: transform 0.6s var(--ease); }
+}
+.carousel__slide {
+  flex: 0 0 calc(50% - (var(--carousel-gap) / 2));
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .carousel__slide { flex: 0 0 100%; }
+}
+
+.carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--charcoal-deep);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  box-shadow: 0 6px 16px -6px rgba(23,20,15,0.5);
+  transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.carousel__arrow:hover { background: #ffc71f; }
+.carousel__arrow:active { transform: translateY(-50%) scale(0.94); }
+.carousel__arrow--prev { left: 10px; }
+.carousel__arrow--next { right: 10px; }
+
 .gallery-tile {
   display: block;
   width: 100%;
+  height: 100%;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
@@ -900,7 +945,6 @@ button:focus-visible,
    ============================================================ */
 @media (max-width: 1024px) {
   .services-grid { grid-template-columns: repeat(2, 1fr); }
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .featured { grid-template-columns: 1fr; }
   .featured__media { order: -1; aspect-ratio: 16/9; }
   .about { grid-template-columns: 1fr; }
@@ -941,7 +985,7 @@ button:focus-visible,
   .lang-toggle--nav .lang-toggle__btn { padding: 0.35em 0.55em; font-size: 0.68rem; min-height: 28px; }
 
   .services-grid { grid-template-columns: 1fr 1fr; }
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .carousel__arrow { width: 40px; height: 40px; font-size: 1.2rem; }
   .contact-info { grid-template-columns: 1fr; justify-items: center; text-align: center; }
 }
 

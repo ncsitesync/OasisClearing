@@ -307,22 +307,20 @@ button:focus-visible,
   color: var(--cream);
 }
 
-.hero__media { position: absolute; inset: 0; z-index: 0; }
-/* Placeholder gradient — swap .hero__media-placeholder for a real
-   <img class="hero__media-img" src="images/hero.jpg" loading="eager" alt="">
-   or a muted autoplay <video>. Keep .hero__scrim above it either way. */
-.hero__media-placeholder {
-  position: absolute; inset: 0;
+.hero__media {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden;
+  /* Fallback fill — visible while the video buffers, or if it fails
+     to load/play at all (e.g. data-saver mode). */
   background:
     radial-gradient(120% 90% at 15% 10%, rgba(122,132,66,0.35), transparent 55%),
     linear-gradient(160deg, #2E2822 0%, #211D19 45%, #17140F 100%);
 }
-.hero__topo {
+.hero__video {
   position: absolute; inset: 0;
-  opacity: 0.16;
-  background-image:
-    repeating-radial-gradient(circle at 82% 28%, transparent 0, transparent 26px, rgba(235,226,203,0.5) 27px, transparent 28px, transparent 64px);
-  mix-blend-mode: overlay;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .hero__scrim {
   position: absolute; inset: 0; z-index: 1;

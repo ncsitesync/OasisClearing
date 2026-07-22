@@ -1,17 +1,35 @@
 /* ============================================================
    OASIS J&R LAND CLEARING — main.js
-   Vanilla JS, no dependencies. Five independent features:
+   Vanilla JS, no dependencies. Six independent features:
    1. Mobile nav toggle (aria-expanded)
    2. Staggered scroll-reveal via IntersectionObserver
    3. Hero on-load stagger (fade + slide up, fixed sequence)
    4. Gallery lightbox with focus trap + Escape + focus-return
    5. EN / ES language toggle (data-en / data-es swap)
+   6. Hero background video (reduced-motion aware autoplay)
    ============================================================ */
 
 (function () {
   "use strict";
 
   var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------------------------------------------------------
+     Hero background video — autoplay is started from here
+     rather than the HTML `autoplay` attribute, so that when
+     prefers-reduced-motion is on we simply never call play()
+     and the poster frame stays put. No flash of motion either
+     way, since the poster is itself a frame from the video.
+     --------------------------------------------------------- */
+  var heroVideo = document.getElementById("hero-video");
+  if (heroVideo && !prefersReducedMotion) {
+    var playAttempt = heroVideo.play();
+    if (playAttempt && typeof playAttempt.catch === "function") {
+      // Autoplay can still be blocked by the browser in some contexts
+      // (e.g. low-power mode) — fail silently and keep the poster.
+      playAttempt.catch(function () {});
+    }
+  }
 
   /* ---------------------------------------------------------
      0. Language toggle — kept in a plain variable for the

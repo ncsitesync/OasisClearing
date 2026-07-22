@@ -2,24 +2,25 @@
    OASIS J&R LAND CLEARING — stylesheet
    Vanilla CSS, no build step, no framework.
 
-   Signature element: diagonal "blade-cut" section dividers
-   (.diagonal-divider) — every section seam is cut at an angle,
-   like a dozer blade swath, instead of a straight line.
+   Restyled to follow a dark, photo-heavy, credibility-driven
+   contractor-site layout: two-tone hero headline, credibility
+   pill row, numbered service cards, a stats-driven About split,
+   and a "ready to talk" CTA band. Palette stays Oasis's own:
+   earthy charcoal/soil darks, sand lights, sparing yellow accent.
 
    Type system:
      Display / headlines : "Oswald" SemiBold — clean condensed sans,
        strong and industrial without being ultra-heavy, stencil,
        or CAT-like
      Body                : "IBM Plex Sans"
-     Labels / specs      : "IBM Plex Mono" — used for the hero
-       spec strip and the About "spec plate", echoing an
-       equipment ID plate.
+     Labels / specs      : "IBM Plex Mono" — small eyebrows, specs,
+       credibility pills.
    ============================================================ */
 
 /* ---------- Tokens ---------- */
 :root {
   /* Palette — earthy, grounded, sparing accent */
-  --charcoal-deep:  #17140F;   /* darkest — footer, contact */
+  --charcoal-deep:  #17140F;   /* darkest — footer, CTA band, contact */
   --charcoal:       #211D19;   /* primary dark bg */
   --charcoal-2:     #2E2822;   /* raised dark surfaces */
   --soil:           #4A3324;   /* soil brown — secondary dark bg */
@@ -40,7 +41,6 @@
   --font-mono: "IBM Plex Mono", "Consolas", monospace;
 
   --container-w: 1180px;
-  --divider-h: clamp(36px, 6vw, 84px);
 
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -121,6 +121,9 @@ button:focus-visible,
 .section--charcoal-deep { background: var(--charcoal-deep); color: var(--cream); }
 
 .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.14em;
@@ -130,6 +133,14 @@ button:focus-visible,
   margin-bottom: 0.9rem;
 }
 .eyebrow--light { color: var(--yellow); }
+.eyebrow__rule {
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.7;
+  flex: none;
+}
 
 .section-title {
   font-family: var(--font-display);
@@ -139,34 +150,17 @@ button:focus-visible,
   letter-spacing: 0;
   text-transform: uppercase;
   color: var(--ink);
-  max-width: 16ch;
+  max-width: 18ch;
   margin-bottom: 1.6rem;
 }
 .section-title--light { color: var(--cream); }
-
-/* ---------- Diagonal blade-cut dividers (signature element) ---------- */
-.diagonal-divider {
-  position: relative;
-  width: 100%;
-  height: var(--divider-h);
-  margin-top: calc(var(--divider-h) * -1);
-  z-index: 2;
-  pointer-events: none;
-}
-.diagonal-divider--to-sand     { background: var(--sand); clip-path: polygon(0% 100%, 100% 30%, 100% 100%); }
-.diagonal-divider--to-soil     { background: var(--soil); clip-path: polygon(0% 100%, 100% 30%, 100% 100%); }
-.diagonal-divider--to-charcoal { background: var(--charcoal); clip-path: polygon(0% 100%, 100% 30%, 100% 100%); }
-.diagonal-divider--flip { transform: scaleX(-1); }
-/* No overlap variant — used right after the hero spec strip, which is too
-   thin (just one line of text) to safely sit under the standard overlap. */
-.diagonal-divider--flush { margin-top: 0; }
 
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
+  gap: 0.6em;
   font-family: var(--font-mono);
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -181,6 +175,8 @@ button:focus-visible,
 }
 .btn:hover { transform: translateY(-2px); }
 .btn .icon { width: 1.1em; height: 1.1em; fill: currentColor; }
+.btn__arrow { transition: transform 0.2s var(--ease); }
+.btn:hover .btn__arrow { transform: translateX(3px); }
 
 .btn--primary {
   background: var(--yellow);
@@ -206,7 +202,25 @@ button:focus-visible,
 .btn--call:hover { background: var(--soil); }
 
 .btn--lg { padding: 1.05em 2em; font-size: 0.95rem; }
-.btn--xl { padding: 1.2em 2.4em; font-size: 1.05rem; margin-block: 1.8rem 2.4rem; }
+.btn--xl { padding: 1.2em 2.4em; font-size: 1.05rem; }
+
+/* Plain text link with arrow — used where a full button is too heavy
+   (e.g. the featured-service CTA). */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.88rem;
+  color: var(--yellow);
+  margin-top: 1.8rem;
+}
+.text-link__arrow { transition: transform 0.2s var(--ease); }
+.text-link:hover .text-link__arrow { transform: translateX(4px); }
+.text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* ---------- Header / nav ---------- */
 .site-header {
@@ -284,12 +298,12 @@ button:focus-visible,
 
 /* ---------- Hero ---------- */
 .hero {
-  min-height: 82vh;
+  min-height: 92vh;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   overflow: hidden;
-  padding-top: clamp(64px, 12vw, 120px);
-  padding-bottom: 0;
+  padding-block: clamp(120px, 14vw, 160px) clamp(56px, 8vw, 96px);
   color: var(--cream);
 }
 
@@ -312,7 +326,7 @@ button:focus-visible,
 }
 .hero__scrim {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(23,20,15,0.35) 0%, rgba(23,20,15,0.55) 60%, rgba(23,20,15,0.85) 100%);
+  background: linear-gradient(180deg, rgba(23,20,15,0.4) 0%, rgba(23,20,15,0.5) 45%, rgba(23,20,15,0.88) 100%);
 }
 
 .hero__content {
@@ -321,7 +335,6 @@ button:focus-visible,
   max-width: var(--container-w);
   margin-inline: auto;
   padding-inline: clamp(20px, 5vw, 40px);
-  padding-bottom: clamp(48px, 8vw, 96px);
   width: 100%;
 }
 
@@ -350,7 +363,7 @@ button:focus-visible,
   justify-content: center;
 }
 .hero__logo-placeholder {
-  width: clamp(160px, 18vw, 260px);
+  width: clamp(150px, 16vw, 230px);
   aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
@@ -367,12 +380,12 @@ button:focus-visible,
 .hero__logo-placeholder-mark {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+  font-size: clamp(1.2rem, 2.2vw, 1.7rem);
   letter-spacing: 0.04em;
 }
 .hero__logo-placeholder-sub {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(251, 247, 236, 0.65);
@@ -389,7 +402,7 @@ button:focus-visible,
   background: var(--yellow);
   padding: 0.3em;
   border-radius: 999px;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.3rem;
   box-shadow: 0 4px 0 var(--yellow-dark);
 }
 .lang-toggle__btn {
@@ -426,27 +439,41 @@ button:focus-visible,
 .lang-toggle--nav .lang-toggle__btn.is-active { background: var(--yellow); color: var(--charcoal-deep); }
 .lang-toggle--nav .lang-toggle__sep { color: rgba(251, 247, 236, 0.3); }
 
-/* Business name — sits above the eyebrow label and the headline, styled
-   as a small accent line so it reads as the company name without
-   competing with the big display headline below it. */
+/* Business name — small accent line above the eyebrow/headline so it
+   reads as the company name without competing with the big headline. */
 .hero__brand-name {
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.06em;
   color: var(--yellow);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
 .hero__headline {
   font-family: var(--font-display);
-  font-weight: 600;
   text-transform: uppercase;
-  font-size: clamp(3rem, 10vw, 7.4rem);
-  line-height: 1;
+  margin-bottom: 1.2rem;
+}
+/* Two-tone treatment: a lighter/thinner first line, then a bold solid
+   line with a short accent underline — the hero's signature move. */
+.hero__headline-light,
+.hero__headline-bold {
+  display: block;
+  line-height: 1.05;
   letter-spacing: 0;
+}
+.hero__headline-light {
+  font-weight: 500;
+  font-size: clamp(2rem, 6vw, 4rem);
+  color: rgba(251, 247, 236, 0.6);
+}
+.hero__headline-bold {
+  font-weight: 700;
+  font-size: clamp(2.6rem, 8vw, 5.4rem);
   color: var(--cream);
-  margin-bottom: 1.1rem;
+  padding-bottom: 0.2em;
+  border-bottom: 5px solid var(--yellow);
   text-shadow: 0 2px 24px rgba(0,0,0,0.35);
 }
 
@@ -454,35 +481,35 @@ button:focus-visible,
   max-width: 46ch;
   font-size: clamp(1rem, 1.6vw, 1.2rem);
   color: rgba(251,247,236,0.88);
-  margin-bottom: 2.2rem;
+  margin-top: 1.3rem;
+  margin-bottom: 1.8rem;
 }
 
-.hero__ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 1rem; }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 1.8rem; }
 
-.spec-strip {
-  position: relative;
-  z-index: 2;
-  margin-top: auto;
-  background: var(--yellow);
-  color: var(--charcoal-deep);
-  overflow: hidden;
-  border-top: 2px solid var(--charcoal-deep);
-}
-.spec-strip__track {
+/* Credibility pills — replace the old full-width spec strip with a
+   row of small badges, same facts, quieter presentation. */
+.credibility-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6em 0.8em;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.85em clamp(20px, 5vw, 40px);
-  max-width: var(--container-w);
-  margin-inline: auto;
+  gap: 10px 14px;
 }
-.spec-strip__dot { opacity: 0.55; }
+.credibility-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(251, 247, 236, 0.82);
+  background: rgba(251, 247, 236, 0.06);
+  border: 1px solid rgba(251, 247, 236, 0.18);
+  border-radius: 999px;
+  padding: 0.6em 1em;
+}
+.credibility-pill__dot { color: var(--yellow); }
 
 /* ---------- Services ---------- */
 .services-grid {
@@ -523,10 +550,25 @@ button:focus-visible,
   background: linear-gradient(0deg, rgba(23,20,15,0.92) 0%, rgba(23,20,15,0.35) 55%, transparent 75%);
   z-index: 0;
 }
-.service-card__arrow {
+
+.service-card__top {
   position: relative; z-index: 1;
-  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+.service-card__num {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.service-card__arrow {
   width: 2.1em; height: 2.1em;
+  flex: none;
   display: flex; align-items: center; justify-content: center;
   background: var(--yellow);
   color: var(--charcoal-deep);
@@ -601,41 +643,15 @@ button:focus-visible,
   }
 }
 
-/* ---------- Trust row ---------- */
-.trust-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(24px, 4vw, 48px);
-}
-.trust-cell__mark {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--yellow);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.8rem;
-}
-.trust-cell__title {
-  font-family: var(--font-display-solid);
-  text-transform: uppercase;
-  font-weight: 600;
-  font-size: 1.4rem;
-  line-height: 1.1;
-  margin-bottom: 0.6rem;
-  color: var(--cream);
-}
-.trust-cell__desc { color: rgba(251,247,236,0.8); font-size: 0.95rem; max-width: 32ch; }
-
 /* ---------- Gallery ---------- */
 .gallery-grid {
-  columns: 4 220px;
-  column-gap: clamp(12px, 2vw, 20px);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 2vw, 20px);
 }
 .gallery-tile {
   display: block;
   width: 100%;
-  break-inside: avoid;
-  margin-bottom: clamp(12px, 2vw, 20px);
   position: relative;
   border-radius: 4px;
   overflow: hidden;
@@ -643,18 +659,11 @@ button:focus-visible,
 }
 .gallery-tile__img {
   width: 100%;
-  /* varied heights create the masonry rhythm; swap each for a
-     real <img loading="lazy" src="images/gallery-0X.jpg" alt="...">
+  aspect-ratio: 4 / 3;
+  /* swap each for a real
+     <img loading="lazy" src="images/gallery-0X.jpg" alt="...">
      and remove the fixed aspect-ratio if the photo has its own. */
 }
-.gallery-tile:nth-child(1) .gallery-tile__img,
-.gallery-tile:nth-child(5) .gallery-tile__img { aspect-ratio: 3/4; }
-.gallery-tile:nth-child(2) .gallery-tile__img,
-.gallery-tile:nth-child(7) .gallery-tile__img { aspect-ratio: 1/1; }
-.gallery-tile:nth-child(3) .gallery-tile__img,
-.gallery-tile:nth-child(6) .gallery-tile__img { aspect-ratio: 4/5; }
-.gallery-tile:nth-child(4) .gallery-tile__img,
-.gallery-tile:nth-child(8) .gallery-tile__img { aspect-ratio: 5/4; }
 
 .gallery-tile__img--1 { background: linear-gradient(160deg,#7A8442,#4B5320); }
 .gallery-tile__img--2 { background: linear-gradient(160deg,#5C4230,#4A3324); }
@@ -747,57 +756,83 @@ button:focus-visible,
   margin-top: 0.1em;
 }
 
-/* ---------- About + spec plate ---------- */
+/* ---------- About + stats ---------- */
 .about {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(28px, 5vw, 64px);
-  align-items: start;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(32px, 6vw, 80px);
+  align-items: center;
 }
-.about__content p { margin-bottom: 1rem; max-width: 48ch; color: var(--ink-soft); }
+.about__content p { margin-bottom: 1rem; max-width: 50ch; color: rgba(251,247,236,0.82); }
+.about__ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 1.6rem; }
 
-.spec-plate {
-  position: relative;
-  background: var(--charcoal);
-  color: var(--cream);
-  border-radius: 6px;
-  padding: clamp(24px, 3.4vw, 40px);
-  box-shadow: inset 0 0 0 1px rgba(242,183,5,0.18);
+/* Big-number credibility stats — vertical stack with dividers,
+   deliberately using words ("Local", "Own Crew") rather than fake
+   numeric claims since Oasis has no verified stat to put there yet. */
+.stats {
+  display: flex;
+  flex-direction: column;
 }
-.spec-plate__bolt {
-  position: absolute;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #b8b0a0, #6b6357 70%);
+.stat {
+  padding-block: 1.4rem;
+  border-top: 1px solid rgba(251, 247, 236, 0.18);
 }
-.spec-plate__bolt--tl { top: 14px; left: 14px; }
-.spec-plate__bolt--tr { top: 14px; right: 14px; }
-.spec-plate__bolt--bl { bottom: 14px; left: 14px; }
-.spec-plate__bolt--br { bottom: 14px; right: 14px; }
-.spec-plate__title {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+.stat:last-child { border-bottom: 1px solid rgba(251, 247, 236, 0.18); }
+.stat__num {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
   text-transform: uppercase;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
   color: var(--yellow);
-  margin-bottom: 1.4rem;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px dashed rgba(251,247,236,0.25);
+  line-height: 1.1;
 }
-.spec-plate__list { display: flex; flex-direction: column; gap: 1rem; }
-.spec-plate__list dt {
+.stat__label {
+  display: block;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgba(251,247,236,0.55);
-  margin-bottom: 0.25rem;
+  color: rgba(251, 247, 236, 0.7);
+  margin-top: 0.4rem;
 }
-.spec-plate__list dd { font-size: 0.95rem; }
+
+/* ---------- CTA band ---------- */
+.cta-band {
+  background: linear-gradient(160deg, var(--soil) 0%, var(--charcoal-deep) 100%);
+  color: var(--cream);
+  text-align: center;
+}
+.cta-band__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cta-band__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
+  line-height: 1.05;
+  max-width: 18ch;
+  color: var(--cream);
+  margin-bottom: 1.2rem;
+}
+.cta-band__phone {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  letter-spacing: 0.04em;
+  color: var(--yellow);
+  margin-bottom: 1.8rem;
+  transition: color 0.2s var(--ease);
+}
+.cta-band__phone:hover { color: #ffc71f; text-decoration: underline; text-underline-offset: 5px; }
 
 /* ---------- Contact panel ---------- */
 .contact { text-align: center; }
-.contact__lede { max-width: 46ch; margin-inline: auto; color: rgba(251,247,236,0.85); font-size: 1.05rem; }
+.contact__lede { max-width: 46ch; margin-inline: auto; color: rgba(251,247,236,0.85); font-size: 1.05rem; margin-top: 0.6rem; }
 .contact-info {
   display: grid;
   grid-template-columns: repeat(4, auto);
@@ -836,7 +871,7 @@ button:focus-visible,
 
 /* ---------- Reveal animations (fade + slide up, gated behind reduced-motion) ----------
    .reveal      — scroll-triggered (IntersectionObserver), used on sections
-                  below the hero. Grouped items (cards/tiles/cells) stagger
+                  below the hero. Grouped items (cards/tiles/stats) stagger
                   via --reveal-delay set per sibling in js/main.js.
    .reveal-hero — page-load stagger for the hero only, sequenced via
                   data-hero-order (see js/main.js). Shares the same visual
@@ -867,15 +902,18 @@ button:focus-visible,
    ============================================================ */
 @media (max-width: 1024px) {
   .services-grid { grid-template-columns: repeat(2, 1fr); }
-  .gallery-grid { columns: 3 180px; }
-  .featured, .about { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .featured { grid-template-columns: 1fr; }
   .featured__media { order: -1; aspect-ratio: 16/9; }
+  .about { grid-template-columns: 1fr; }
+  .stats { margin-top: 2.4rem; }
   .contact-info { grid-template-columns: repeat(2, auto); }
 }
 
 @media (max-width: 760px) {
+  .hero { padding-top: clamp(96px, 20vw, 140px); }
   .hero__grid { flex-direction: column; align-items: stretch; }
-  .hero__logo-wrap { margin-top: 1.6rem; }
+  .hero__logo-wrap { margin-top: 1.8rem; }
   .hero__logo-placeholder { width: clamp(140px, 40vw, 200px); margin-inline: auto; }
 
   .main-nav { position: fixed; inset: 64px 0 auto 0; z-index: 90; }
@@ -905,10 +943,8 @@ button:focus-visible,
   .lang-toggle--nav .lang-toggle__btn { padding: 0.35em 0.55em; font-size: 0.68rem; min-height: 28px; }
 
   .services-grid { grid-template-columns: 1fr 1fr; }
-  .trust-grid { grid-template-columns: 1fr; gap: 32px; }
-  .gallery-grid { columns: 2 140px; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .contact-info { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-  :root { --divider-h: clamp(24px, 8vw, 48px); }
 }
 
 @media (max-width: 480px) {

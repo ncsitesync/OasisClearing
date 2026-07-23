@@ -1,6 +1,6 @@
 /* ============================================================
    OASIS J&R LAND CLEARING — main.js
-   Vanilla JS, no dependencies. Seven independent features:
+   Vanilla JS, no dependencies. Eight independent features:
    1. Mobile nav toggle (aria-expanded)
    2. Staggered scroll-reveal via IntersectionObserver
    3. Hero on-load stagger (fade + slide up, fixed sequence)
@@ -8,6 +8,8 @@
    5. EN / ES language toggle (data-en / data-es swap)
    6. Hero background video (reduced-motion aware autoplay)
    7. Project photo carousel (auto-advance, arrows, swipe, loop)
+   8. Hero scroll fade — content + scrim fade out together as
+      the user scrolls, revealing heroimage.png (RAF-throttled)
    ============================================================ */
 
 (function () {
@@ -298,6 +300,58 @@
         heroRevealEls.forEach(function (el) { el.classList.add("is-visible"); });
       });
     });
+  }
+
+  /* ---------------------------------------------------------
+     8. Hero scroll fade
+     As the user scrolls through the hero, .hero__content (the
+     business name, eyebrow, headline, subhead, CTAs,
+     credibility pills, logo placeholder, and EN/ES toggle all
+     live inside this one wrapper) fades from opaque to
+     transparent, while .hero__scrim fades the same amount so
+     the dark overlay lightens and heroimage.png shows through
+     clearly. Both driven by one scroll-progress value (0 at the
+     top of the hero, 1 once it's scrolled a full hero-height)
+     so the two effects stay perfectly in sync.
+
+     Opacity is set directly (no CSS transition) and only inside
+     a requestAnimationFrame callback gated by a "ticking" flag,
+     so a burst of scroll events collapses to one style write per
+     frame — smooth and layout-shift-free. Skipped entirely under
+     prefers-reduced-motion, leaving the content/scrim at their
+     normal (non-scroll-linked) state.
+     --------------------------------------------------------- */
+  var heroEl = document.querySelector(".hero");
+  var heroContentEl = document.querySelector(".hero__content");
+  var heroScrimEl = document.querySelector(".hero__scrim");
+
+  if (heroEl && heroContentEl && heroScrimEl && !prefersReducedMotion) {
+    var heroFadeHeight = heroEl.offsetHeight;
+    var heroFadeTicking = false;
+
+    function updateHeroFade() {
+      heroFadeTicking = false;
+      var progress = heroFadeHeight > 0 ? window.scrollY / heroFadeHeight : 0;
+      if (progress < 0) progress = 0;
+      if (progress > 1) progress = 1;
+      var opacity = String(1 - progress);
+      heroContentEl.style.opacity = opacity;
+      heroScrimEl.style.opacity = opacity;
+    }
+
+    function onHeroScroll() {
+      if (heroFadeTicking) return;
+      heroFadeTicking = true;
+      requestAnimationFrame(updateHeroFade);
+    }
+
+    window.addEventListener("scroll", onHeroScroll, { passive: true });
+    window.addEventListener("resize", function () {
+      heroFadeHeight = heroEl.offsetHeight;
+      onHeroScroll();
+    });
+
+    updateHeroFade(); // correct state immediately, e.g. on a mid-scroll reload
   }
 
   /* ---------------------------------------------------------

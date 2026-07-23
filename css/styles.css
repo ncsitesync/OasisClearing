@@ -314,26 +314,20 @@ button:focus-visible,
   overflow: hidden;
   padding-block: clamp(120px, 14vw, 160px) clamp(56px, 8vw, 96px);
   color: var(--cream);
+  background-color: #211D19;
+  background-image: url('../heroimage.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.hero__media {
-  position: absolute; inset: 0; z-index: 0;
-  overflow: hidden;
-  /* Fallback fill — visible while the video buffers, or if it fails
-     to load/play at all (e.g. data-saver mode). */
-  background:
-    radial-gradient(120% 90% at 15% 10%, rgba(122,132,66,0.35), transparent 55%),
-    linear-gradient(160deg, #2E2822 0%, #211D19 45%, #17140F 100%);
-}
-.hero__video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
 .hero__scrim {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(23,20,15,0.4) 0%, rgba(23,20,15,0.5) 45%, rgba(23,20,15,0.88) 100%);
+  background: linear-gradient(180deg, rgba(23,20,15,0.55) 0%, rgba(23,20,15,0.62) 45%, rgba(23,20,15,0.9) 100%);
+  /* Opacity is scrubbed 1→0 by the scroll handler in js/main.js as the
+     user scrolls through the hero, so the photo reads clearly beneath
+     it; will-change hints the compositor since this updates every frame. */
+  will-change: opacity;
 }
 
 .hero__content {
@@ -343,6 +337,9 @@ button:focus-visible,
   margin-inline: auto;
   padding-inline: clamp(20px, 5vw, 40px);
   width: 100%;
+  /* Opacity is scrubbed 1→0 in lockstep with .hero__scrim above — see
+     the scroll handler in js/main.js. */
+  will-change: opacity;
 }
 
 /* Two-column hero: copy on the left, logo placeholder on the right,
@@ -953,7 +950,7 @@ button:focus-visible,
 }
 
 @media (max-width: 760px) {
-  .hero { padding-top: clamp(96px, 20vw, 140px); }
+  .hero { padding-top: clamp(96px, 20vw, 140px); background-position: 18% center; }
   .hero__grid { flex-direction: column; align-items: stretch; }
   .hero__logo-wrap { margin-top: 1.8rem; }
   .hero__logo-placeholder { width: clamp(140px, 40vw, 200px); margin-inline: auto; }

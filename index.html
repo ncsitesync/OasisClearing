@@ -115,23 +115,11 @@
 
   <!-- ============================================================
        HERO
-       Background is media/hero.mp4 + media/hero.webm (compressed from
-       loophero.mp4 — see media/ folder), looping, muted, no controls.
-       .hero__media keeps its gradient as a fallback fill behind the
-       video (visible while it buffers, or if it fails to load).
-       Autoplay is started from JS (see main.js) rather than the HTML
-       attribute, so prefers-reduced-motion can cleanly skip it and
-       just show the poster frame instead — no flash of motion.
-       Keep .hero__scrim on top of it — it's what keeps the headline
-       readable over the footage.
+       Background is heroimage.png (full-bleed, cover), set in
+       css/styles.css on .hero itself. Keep .hero__scrim on top of
+       it — it's what keeps the headline readable over the photo.
        ============================================================ -->
   <section class="section hero" aria-label="Introduction">
-    <div class="hero__media" aria-hidden="true">
-      <video class="hero__video" id="hero-video" muted loop playsinline preload="metadata" poster="media/hero-poster.jpg">
-        <source src="media/hero.webm" type="video/webm">
-        <source src="media/hero.mp4" type="video/mp4">
-      </video>
-    </div>
     <div class="hero__scrim" aria-hidden="true"></div>
 
     <div class="hero__content">
